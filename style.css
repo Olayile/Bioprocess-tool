@@ -1,0 +1,29 @@
+/* body {
+    color: #fff;
+    background-color: #f4f6f9;
+}
+
+.stButton>button {
+    color: #1554c2;
+    border-radius: 10%;
+    height: 3em;
+    width: 10em;
+} */
+
+
+.highlight {
+    border-radius: 0.4rem;
+    color: white;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .bold {
+    padding-left: 1rem;
+    font-weight: 700;
+  }
+  .blue {
+    background-color: lightcoral;
+  }
+  .red {
+    background-color: lightblue;
+  }
