@@ -22,7 +22,7 @@ def get_residuals(dat, axis):
     plt.ylabel('Studentized Residuals')
     
     fig_1 = px.scatter(x=x, y=y)
-    fig_1.update_layout(title='Studentized residual Plot', autosize=False,
+    fig_1.update_layout( autosize=False,
                   width=800, height=800,
                   margin=dict(l=40, r=40, b=40, t=40), shapes=[dict(type= 'line',yref= 'y', y0= 0, y1= 0, xref= 'paper', x0= 0, x1= 14)])
                   
