@@ -45,18 +45,14 @@ local_css("style.css")
 
 #sidebar
 def main():
+    bioreactor=st.sidebar.selectbox('Bioreactor setup', ['Batch', 'Continous'])
     st.sidebar.selectbox('Biological Kinetics', ['Monod', 'Substrate Inhibition', 'Product Inhibition'])
 
 
-    initial_conditions=st.sidebar.number_input('Initial Substrate')
-    units_substrate = st.sidebar.selectbox('Units',['mg/L', 'g/L', 'mg/m3','g/m3'])
-    # remember to change unit during analysis
-
-    initial_conditions_Product =st.sidebar.number_input('Initial Product')
-    units_product = st.sidebar.selectbox('Units',['mg/L', 'g/L', 'mg/m3','g/m3'], key=1)
+   
 
 
-    bioreactor=st.sidebar.selectbox('Bioreactor setup', ['Batch', 'Continous'])
+    
     #If the batch operation is chosen, the physical parameters such as flow rate, volume,dilution rate, retention time are hidden and cannot be edited by the user
     if bioreactor == 'Batch':
         st.image('Images/batch.png')
