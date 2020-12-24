@@ -7,6 +7,7 @@ import plotly.express as px
 import pandas as pd
 import ols
 import base64
+import substrate_models as sm
 
 
 
@@ -35,18 +36,21 @@ def icon(icon_name):
     st.markdown(f'<i class="material-icons">{icon_name}</i>', unsafe_allow_html=True)
 
 local_css("style.css")
-# remote_css('https://fonts.googleapis.com/icon?family=Material+Icons')
 
-# icon("search")
-# selected = st.number_input("", "Search...")
-# button_clicked = st.button("OK")
+
+
+
 
 
 
 #sidebar
 def main():
-    bioreactor=st.sidebar.selectbox('Bioreactor setup', ['Batch', 'Continous'])
-    st.sidebar.selectbox('Biological Kinetics', ['Monod', 'Substrate Inhibition', 'Product Inhibition'])
+
+   
+
+    if st.sidebar.selectbox('Choose Your Project', ['Open Single Limiting Nutrient Project', 'Open Multiple Limiting Nutrients Project', 'Open Inhibition Model Project'] ):
+        bioreactor=st.sidebar.selectbox('Bioreactor setup', ['Batch', 'Continous'])
+        kinetics_chosen=st.sidebar.selectbox('Biological Kinetics', ['Monod', 'Substrate Inhibition', 'Product Inhibition'])
 
 
    
@@ -187,10 +191,12 @@ def main():
         t = np.linspace(0., int(time),  int(delta_t))
         N = odeint(dx_dt, biomass_concentration, t, args=(mumax, (biomass_concentration+10
     )))
-        fig = px.line(x=t, y=N)
-        fig.update_layout(title='IRR', autosize=False,
+        fig = px.line(x=t, y=N, labels=dict(x= 'Time', y='Biomass concentration'))
+        fig.update_layout( title= {'text':f"{kinetics_chosen}", 'xanchor': 'center', 'yanchor': 'top'}, autosize=False,
                   width=800, height=800,
-                  margin=dict(l=40, r=40, b=40, t=40)
+                  margin=dict(l=40, r=40, b=40, t=40), 
+                  font= dict(size= 15)
+                  
 )
         st.plotly_chart(fig)
 
@@ -201,12 +207,29 @@ def main():
 
     st.write(ols.get_residuals(dataset, 'Y'))
 
+    
+
+
+
+    
+
+    selected_equations = st.multiselect("Select One or more inhibition models", ["Monod (No inhibition)", "Competive inhibiton", "Non-competitive inhibition", "Edward's Model", "Andrew's Model", "Modified Steele's Model"])
+
+    # if selected_equations == "Monod (No inhibition)":
+    st.write(sm.monod(1,1,1))
+
+
+
+
+        # if selected_equations == "Monod (No inhibition)":
+        #     st.latex('$\mu=\frac{\hat{\mu} S_{S}}{S_{S}+K_{S}}$')
+
     def download_link(object_to_download, download_filename, download_link_text):
         """
         Generates a link to download the given object_to_download.
 
         object_to_download (str, pd.DataFrame):  The object to be downloaded.
-        download_filename (str): filename and extension of file. e.g. mydata.csv, some_txt_output.txt
+        download_filename (str): filename and extension of file. e.g. myata.csv, some_txt_output.txt
         download_link_text (str): Text to display for download link.
 
         Examples:
@@ -231,8 +254,9 @@ def main():
         tmp_download_link = download_link(dataset, 'YOUR_DF.csv', 'Click here to download your data!')
         st.markdown(tmp_download_link, unsafe_allow_html=True)
 
+    # Non-inhibiting and biomass inhibition models
 
-
+    
 
     # s = st.text_input('Enter text here')
     # st.write(s)
