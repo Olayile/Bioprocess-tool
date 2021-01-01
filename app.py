@@ -276,26 +276,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-
-            
-        
-    #####Caalls######################
-    # 
-
-   
-
-    
-
-    
-    
-
-    
-
-    
-    
-
-    
-
-  
-#write(sympy_expr)

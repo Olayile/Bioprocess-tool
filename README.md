@@ -9,3 +9,10 @@ products of the experiments.
 concentration, temperature
 
 - Study both batch and continuous bioprocesses. 
+
+
+## Pre/post regression diagnostics
+
+- Sensitivity
+- Identifiability
+- Model significance
