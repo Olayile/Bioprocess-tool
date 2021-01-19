@@ -48,13 +48,14 @@ local_css("style.css")
 def main():
 
    
+    st.sidebar.image('Images/Green Connection Icon Internet Logo (1).png', use_column_width= True)
 
     if st.sidebar.selectbox('Choose Your Project', ['Open Single Limiting Nutrient Project', 'Open Multiple Limiting Nutrients Project', 'Open Inhibition Model Project'] ):
         bioreactor=st.sidebar.selectbox('Bioreactor setup', ['Batch', 'Continous'])
         kinetics_chosen=st.sidebar.selectbox('Biological Kinetics', ['Monod', 'Substrate Inhibition', 'Product Inhibition'])
 
-
-   
+    st.image('Images/Untitled design.png', use_column_width= True)
+    
 
 
     
@@ -97,31 +98,6 @@ def main():
         product_column_1 = st.text_input('Add the column name for the product yield you would like', key=1)
         time_column = st.text_input('Add the column name for the time column you would like to use')
         st.write(productivity(df, product_column_1, time_column))
-
-            # elif selection == 'Productivity':
-            #     product_column= st.text_input('Add the column name for the product yield you would like')
-            #     session_state = SessionState.get(name="", button_sent=False)
-            #     button_sent = st.button('Submit', key=1)
-
-            #     if button_sent:
-            #         session_state.button_sent = True
-
-            #     if session_state.button_sent:
-            #         st.write(product_column)
-                    
-            #     time_column = st.text_input('Add the column name for the time column you would like to use')
-            #     session_state_1 = SessionState.get(name="", button_sent=False)
-            #     button_sent2 = st.button('Submit', key=2)
-
-            #     if button_sent2:
-            #         session_state_1.button_sent2 = True
-
-            #     if session_state_1.button_sent2:
-            #         st.write(time_column)
-                    
-
-
-            #     st.write(productivity(df, product_column, time_column))
 
 
 
