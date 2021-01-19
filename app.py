@@ -8,7 +8,8 @@ import pandas as pd
 import ols
 import base64
 import substrate_models as sm
-
+from calculations import yieldx, productivity
+import pandas as pd
 
 
 
@@ -70,6 +71,61 @@ def main():
 
 
     col3.selectbox('Product', ['Organic Acids', 'Ethanol', 'Hydrogen', 'Other'])
+
+    st.header("Calculations")
+
+    
+
+    csv=st.file_uploader('Add your csv file', type=["csv"])
+
+    if csv is not None:
+        st.write(type(csv))
+        df= pd.read_csv(csv)
+        st.dataframe(df)
+
+                                                                     
+
+        st.subheader("Yield")
+
+        product_column= st.text_input('Add the column name for the product yield you would like')
+        substrate_column= st.text_input('Add the column name for the substrate column you would like')
+        st.write(yieldx(df, product_column, substrate_column))
+
+
+        st.subheader("Productivity")
+
+        product_column_1 = st.text_input('Add the column name for the product yield you would like', key=1)
+        time_column = st.text_input('Add the column name for the time column you would like to use')
+        st.write(productivity(df, product_column_1, time_column))
+
+            # elif selection == 'Productivity':
+            #     product_column= st.text_input('Add the column name for the product yield you would like')
+            #     session_state = SessionState.get(name="", button_sent=False)
+            #     button_sent = st.button('Submit', key=1)
+
+            #     if button_sent:
+            #         session_state.button_sent = True
+
+            #     if session_state.button_sent:
+            #         st.write(product_column)
+                    
+            #     time_column = st.text_input('Add the column name for the time column you would like to use')
+            #     session_state_1 = SessionState.get(name="", button_sent=False)
+            #     button_sent2 = st.button('Submit', key=2)
+
+            #     if button_sent2:
+            #         session_state_1.button_sent2 = True
+
+            #     if session_state_1.button_sent2:
+            #         st.write(time_column)
+                    
+
+
+            #     st.write(productivity(df, product_column, time_column))
+
+
+
+        
         
     session_state = SessionState.get(name="", button_sent=False)
     button_sent = st.button('Click here to enter your data')
@@ -196,8 +252,7 @@ def main():
                   width=800, height=800,
                   margin=dict(l=40, r=40, b=40, t=40), 
                   font= dict(size= 15)
-                  
-)
+                  )
         st.plotly_chart(fig)
 
     dataset = pd.DataFrame({'X': t, 'Y': N.ravel()}, columns=['X', 'Y'])
@@ -207,6 +262,8 @@ def main():
 
     st.write(ols.get_residuals(dataset, 'Y'))
 
+    ##############################################################################################
+    
     
 
 
@@ -217,6 +274,16 @@ def main():
 
     # if selected_equations == "Monod (No inhibition)":
     st.write(sm.monod(1,1,1))
+
+
+
+    
+
+
+
+    
+
+
 
 
 

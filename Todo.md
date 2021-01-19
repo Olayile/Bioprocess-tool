@@ -1,0 +1,2 @@
+- Add other non-competitive methods
+- 

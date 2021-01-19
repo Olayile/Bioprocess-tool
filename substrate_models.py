@@ -1,5 +1,7 @@
 from lmfit import minimize, Parameters, Parameter, report_fit
 from scipy.integrate import odeint
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 #SUBSTRTE INHIBITION RATE MODELS
@@ -45,19 +47,21 @@ class Bacteria:
             self.user_defined_model = competitive(self.s, self.umax, self.ks, self.ki)
 
 
-    def dx_dt(self):
-        return self.user_defined_model*self.X
+    def dx_dt(self,y,t):
+        return self.user_defined_model*y
 
-    def g(self):
+    def intergrate(self, y0, t_span):
+        self.y0 = y0
+        self.tspan= t_span
 
-        x= odeint(self.dx_dt, self.X, self.t)
+        x= odeint(self.dx_dt, self.y0, self.tspan )
         return x
 
 #do i have to put self here if i am only using it in this function
-    def residual(self, X=[1], t=[1]):
-        self.X = X
+    def residual(self, X, t):
+        self.X = np.array(X)
         self.t= t
-        self.calc = self.g()
+        self.calc = self.intergrate(self.y0, self.tspan)
         return (self.calc - self.X).ravel()
 
     def set_parameters(self):
@@ -67,17 +71,18 @@ class Bacteria:
         self.params.add('Ki', value= 1.0, min=0, max=10)
         self.params.add('umax', value= 1.0, min=0, max=10)
 
-        self.result = minimize(self.residual, self.params, args=(), method='leastsq')
-        self.final = self.X + result.self.residual.reshape(self.X.shape)
+        self.result = minimize(self.residual, self.params,  method='leastsq')
+        self.final = self.X + self.result.residual.reshape(self.X.shape)
 
     def plot(self):
         plt.plot(self.t, self.X, 'o')
         plt.plot(self.t, self.final, '--', linewidth=2, c='blue');
+        # display fitted statisticsh
         self.report=report_fit(self.result)
 
 
 
-# display fitted statistics
+
     
 
 
@@ -99,6 +104,7 @@ def non_gp(kpng, mp):
 def mixed_gp(kpg, kpng, mu, mp):
     '''Mixed growth products'''
     rp= kpg*mu + kpng + mp
+
     
 # ODE models
 
@@ -124,8 +130,15 @@ def dp_dt(rp, X):
 #how to optimize parameter
 
 if __name__ == "__main__":
+    import random
+    randomlist = []
+    for i in range(0,150):
+        n = random.randint(1,30)
+        randomlist.append(n)
+    
     bacteria = Bacteria(s=5, umax=7, ks=2, ki=3, model_type='monod')
-    bacteria.residual()
+    bacteria.intergrate(5, np.linspace(0,20))
+    bacteria.residual(X=randomlist, t=randomlist)
     bacteria.set_parameters()
     bacteria.plot()
 
