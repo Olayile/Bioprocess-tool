@@ -99,6 +99,23 @@ def main():
         time_column = st.text_input('Add the column name for the time column you would like to use')
         st.write(productivity(df, product_column_1, time_column))
 
+        cell_column = st.text_input('Please add the cell growth column', key=1)
+
+
+        col_sub, col_prod, col_cell = st.beta_columns(3)
+
+
+        
+        fig_substrate = px.scatter(x=df[time_column], y=df[substrate_column],  labels={'x':'t [h]', 'y':'Cs (g/L)'} )
+        fig_product = px.scatter(x=df[time_column], y=df[product_column_1], labels={'x':'t [h]', 'y':'Cp (g/L)'})
+        fig_cell = px.scatter(x=df[time_column], y=df[cell_column], labels={'x':'t [h]', 'y':'Cx (g/L)'} )
+        
+
+
+        col_sub.plotly_chart(fig_substrate)
+        col_prod.plotly_chart(fig_product)
+        col_cell.plotly_chart(fig_cell)
+
 
 
         
