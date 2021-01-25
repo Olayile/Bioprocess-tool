@@ -40,7 +40,10 @@ local_css("style.css")
 
 
 
-
+class Person:
+    name = 'Adam'
+    
+p = Person()
 
 
 
@@ -129,81 +132,137 @@ def main():
     if session_state.button_sent:
     
 
+
+
+    #########################
+ 
+
+
+
+
+    
+        time_units = ['hours', 'minutes']
+        weight_units= ['mg/L', 'g/L', 'mg/m3','g/m3']
+        yield_units = ['mg X/ mg S']
+        def col(amount, name, variable_name, units, check_box=None):
+
+            if amount == 3:
+                col1, col2, col3 = st.beta_columns(3)
+                col1.markdown('')
+                col1.markdown("<div> <span class='highlight blue'>{} <span class='bold'></div>" .format(name), unsafe_allow_html=True)
+                variable  = col2.number_input('', key= name)
+                setattr(p, variable_name, variable)
+                col3.selectbox('', units, key= name)
+                
+            elif amount == 4:
+                col1_7, col2_7, col3_7, col4_7 = st.beta_columns(4)
+                col1_7.markdown('')
+                col1_7.markdown("<div> <span class='highlight blue'>{}x<span class='bold'></div>".format(name), unsafe_allow_html=True)
+                variable =col2_7.number_input('', key=name)
+                setattr(p, variable_name, variable)
+                col3_7.selectbox('',units, key=name)
+                col4_7.markdown('')
+                col4_7.markdown('')
+                col4_7.checkbox(check_box)
+
+
+        
+            
+
         with st.beta_expander('Operation parameters'):
-            col1, col2, col3 = st.beta_columns(3)
-            col1.markdown('')
-            col1.markdown("<div> <span class='highlight blue'>Simulation Time <span class='bold'></div>", unsafe_allow_html=True)
-            time = col2.number_input('')
-            col3.selectbox('',['hours', 'minutes'])
+            col(3, 'Simulation Time', 'time', time_units)
+            # col1, col2, col3 = st.beta_columns(3)
+            # col1.markdown('')
+            # col1.markdown("<div> <span class='highlight blue'>Simulation Time <span class='bold'></div>", unsafe_allow_html=True)
+            # time = col2.number_input('')
+            # col3.selectbox('',['hours', 'minutes'])
             
 
         #operating conditions
-            col1_1, col2_1, col3_1 = st.beta_columns(3)
-            col1_1.markdown('')
-            col1_1.markdown("<div> <span class='highlight blue'>Steptime, deltaT <span class='bold'></div>", unsafe_allow_html=True)
-            delta_t = col2_1.number_input('', key=1)
-            col3_1.selectbox('',['hours', 'minutes'], key=1)
+            col(3, 'Steptime, deltaT', 'delta_t', time_units)
+            # col1_1, col2_1, col3_1 = st.beta_columns(3)
+            # col1_1.markdown('')
+            # col1_1.markdown("<div> <span class='highlight blue'>Steptime, deltaT <span class='bold'></div>", unsafe_allow_html=True)
+            # delta_t = col2_1.number_input('', key=1)
+            # col3_1.selectbox('',['hours', 'minutes'], key=1)
         
         #Initial concentration
         with st.beta_expander('Initial concentrations'):
-            col1_2, col2_2, col3_2 = st.beta_columns(3)
-            col1_2.markdown('')
-            col1_2.markdown("<div> <span class='highlight blue'>Biomass concentration<span class='bold'></div>", unsafe_allow_html=True)
-            biomass_concentration= col2_2.number_input('', key=2)
-            col3_2.selectbox('',['mg/L', 'g/L', 'mg/m3','g/m3'])
+            col(3, 'Biomass concentration', 'biomass_concentration', weight_units)
+            # col1_2, col2_2, col3_2 = st.beta_columns(3)
+            # col1_2.markdown('')
+            # col1_2.markdown("<div> <span class='highlight blue'>Biomass concentration<span class='bold'></div>", unsafe_allow_html=True)
+            # biomass_concentration= col2_2.number_input('', key=2)
+            # col3_2.selectbox('',['mg/L', 'g/L', 'mg/m3','g/m3'])
 
             ## substrate concenration
 
-            col1_3, col2_3, col3_3 = st.beta_columns(3)
-            col1_3.markdown('')
-            col1_3.markdown("<div> <span class='highlight blue'>Substrate concentration<span class='bold'></div>", unsafe_allow_html=True)
-            substate_concentration= col2_3.number_input('', key=3)
-            col3_3.selectbox('',['mg/L', 'g/L', 'mg/m3','g/m3'], key=1)
+            col(3, 'Substrate concentration', 'substrate_concentration', weight_units)
+
+            # col1_3, col2_3, col3_3 = st.beta_columns(3)
+            # col1_3.markdown('')
+            # col1_3.markdown("<div> <span class='highlight blue'>Substrate concentration<span class='bold'></div>", unsafe_allow_html=True)
+            # substate_concentration= col2_3.number_input('', key=3)
+            # col3_3.selectbox('',['mg/L', 'g/L', 'mg/m3','g/m3'], key=1)
 
             ## Product concentration
-            col1_4, col2_4, col3_4 = st.beta_columns(3)
-            col1_4.markdown('')
-            col1_4.markdown("<div> <span class='highlight blue'>Product concentration<span class='bold'></div>", unsafe_allow_html=True)
-            product_concentration=col2_4.number_input('', key=4)
-            col3_4.selectbox('',['mg/L', 'g/L', 'mg/m3','g/m3'], key=2)
+
+            col(3, 'Product concentration', 'product_concentration', weight_units)
+            # col1_4, col2_4, col3_4 = st.beta_columns(3)
+            # col1_4.markdown('')
+            # col1_4.markdown("<div> <span class='highlight blue'>Product concentration<span class='bold'></div>", unsafe_allow_html=True)
+            # product_concentration=col2_4.number_input('', key=4)
+            # col3_4.selectbox('',['mg/L', 'g/L', 'mg/m3','g/m3'], key=2)
 
         with st.beta_expander('Substrate Parameters'):
-            col1_6, col2_6, col3_6 = st.beta_columns(3)
-            col1_6.markdown('')
-            biomass_yield= col1_6.markdown("<div> <span class='highlight blue'>'Biomass Yield (Yx/s)<span class='bold'></div>", unsafe_allow_html=True)
-            col2_6.number_input('', key=5)
-            col3_6.selectbox('',['mg X/ mg S'])
+            col(3, 'Biomass Yield (Yx/s)', 'biomass_yield', yield_units )
+            # col1_6, col2_6, col3_6 = st.beta_columns(3)
+            # col1_6.markdown('')
+            # col1_6.markdown("<div> <span class='highlight blue'>'Biomass Yield (Yx/s)<span class='bold'></div>", unsafe_allow_html=True)
+            # biomass_yield= col2_6.number_input('', key=5)
+            # col3_6.selectbox('',['mg X/ mg S'])
+
+            col(4, 'Max growth rate, umax', 'mumax', ['1/hour'], 'umax temperature correlation')
                 
 
-            col1_7, col2_7, col3_7, col4_7 = st.beta_columns(4)
-            col1_7.markdown('')
-            col1_7.markdown("<div> <span class='highlight blue'>Max growth rate, umax<span class='bold'></div>", unsafe_allow_html=True)
-            mumax=col2_7.number_input('', key=6)
-            col3_7.selectbox('',['L/hour'])
-            col4_7.markdown('')
-            col4_7.markdown('')
-            col4_7.checkbox('umax temperature correlation')
+            # col1_7, col2_7, col3_7, col4_7 = st.beta_columns(4)
+            # col1_7.markdown('')
+            # col1_7.markdown("<div> <span class='highlight blue'>Max growth rate, umax<span class='bold'></div>", unsafe_allow_html=True)
+            # mumax=col2_7.number_input('', key=6)
+            # col3_7.selectbox('',['1/hour'])
+            # col4_7.markdown('')
+            # col4_7.markdown('')
+            # col4_7.checkbox('umax temperature correlation')
 
-            col1_8, col2_8, col3_8, col4_8 = st.beta_columns(4)
-            col1_8.markdown('')
-            col1_8.markdown("<div> <span class='highlight blue'>'Decay constant, b'<span class='bold'></div>", unsafe_allow_html=True)
-            decay_constant=col2_8.number_input('', key=7)
-            col3_8.selectbox('',['1/hour'] , key=1)
-            col4_8.markdown('')
-            col4_8.markdown('')
-            col4_8.checkbox('b temperature correlation')
+            col(4, 'Decay constant, b', 'decay_constant', ['1/hour'], 'b temperature correlation')
 
-            col1_9, col2_9, col3_9= st.beta_columns(3)
-            col1_9.markdown('')
-            col1_9.markdown("<div> <span class='highlight blue'> Half saturation concentration, Ks <span class='bold'></div>", unsafe_allow_html=True)
-            Ks=col2_9.number_input('', key=8)
-            col3_9.selectbox('',['mg/L'] , key=1)
+            # col1_8, col2_8, col3_8, col4_8 = st.beta_columns(4)
+            # col1_8.markdown('')
+            # col1_8.markdown("<div> <span class='highlight blue'>'Decay constant, b'<span class='bold'></div>", unsafe_allow_html=True)
+            # decay_constant=col2_8.number_input('', key=7)
+            # col3_8.selectbox('',['1/hour'] , key=1)
+            # col4_8.markdown('')
+            # col4_8.markdown('')
+            # col4_8.checkbox('b temperature correlation')
+
+
+
+            col(3, 'Half saturation concentration, Ks', 'Ks', ['mg/L'] )
+
+            # col1_9, col2_9, col3_9= st.beta_columns(3)
+            # col1_9.markdown('')
+            # col1_9.markdown("<div> <span class='highlight blue'> Half saturation concentration, Ks <span class='bold'></div>", unsafe_allow_html=True)
+            # Ks=col2_9.number_input('', key=8)
+            # col3_9.selectbox('',['mg/L'] , key=1)
+
+
+            col(3, 'Substrate maintenance coefficient, mS', 'mS',['1/hours']  )
         
-            col1_10, col2_10, col3_10= st.beta_columns(3)
-            col1_10.markdown('')
-            col1_10.markdown("<div> <span class='highlight blue'> Substrate maintenance coefficient, mS <span class='bold'></div>", unsafe_allow_html=True)
-            mS=col2_10.number_input('', key=9)
-            col3_10.selectbox('',['1/hours'] , key=3)
+            # col1_10, col2_10, col3_10= st.beta_columns(3)
+            # col1_10.markdown('')
+            # col1_10.markdown("<div> <span class='highlight blue'> Substrate maintenance coefficient, mS <span class='bold'></div>", unsafe_allow_html=True)
+            # mS=col2_10.number_input('', key=9)
+            # col3_10.selectbox('',['1/hours'] , key=3)
 
         #Product Parameters
         with st.beta_expander('Product Parameters'):
