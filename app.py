@@ -10,7 +10,7 @@ import base64
 import substrate_models as sm
 from calculations import yieldx, productivity
 import pandas as pd
-
+from scipy.optimize import curve_fit
 
 
 
@@ -35,6 +35,12 @@ class  Biomass:
     pass
     
 p = Biomass()
+
+
+# objective function
+
+def objective(x, a, b, c):
+	return a * x + b * x**2 + c
 
 
 
@@ -76,42 +82,90 @@ def main():
     if csv is not None:
         st.write(type(csv))
         df= pd.read_csv(csv)
+        column_names=df.columns.values.tolist()
+        
         st.dataframe(df)
 
                                                                      
 
         st.subheader("Yield")
 
-        product_column= st.text_input('Add the column name for the product yield you would like')
-        substrate_column= st.text_input('Add the column name for the substrate column you would like')
+        product_column= st.selectbox('Add the column name for the product yield you would like', column_names)
+        substrate_column= st.selectbox('Add the column name for the substrate column you would like', column_names)
         st.write(yieldx(df, product_column, substrate_column))
 
 
         st.subheader("Productivity")
 
-        product_column_1 = st.text_input('Add the column name for the product yield you would like', key=1)
-        time_column = st.text_input('Add the column name for the time column you would like to use')
+        product_column_1 = st.selectbox('Add the column name for the product yield you would like', column_names, key=1)
+        time_column = st.selectbox('Add the column name for the time column you would like to use', column_names)
         st.write(productivity(df, product_column_1, time_column))
 
-        cell_column = st.text_input('Please add the cell growth column', key=1)
+        cell_column = st.selectbox('Please add the cell growth column', column_names, key=1)
 
 
         col_sub, col_prod, col_cell = st.beta_columns(3)
 
 
-        
-        fig_substrate = px.scatter(x=df[time_column], y=df[substrate_column],  labels={'x':'t [h]', 'y':'Cs (g/L)'} )
+        #  Curve fitting for substrate
+        x= df[time_column]
+        y= df[substrate_column]
+        popt, _ = curve_fit(objective, x, y)
+        a, b, c = popt
+        y_substrate = objective(x, a, b, c)
+
+
+        # Plot and line of best fit  for substrate
+        fig_substrate = px.scatter(x=x, y=y,  labels={'x':'t [h]', 'y':'Cs (g/L)'} )
+        fig_substrate.add_scatter(x=x, y=y_substrate, mode='lines')
+
+
+        # Curve fitting for product
+        x= df[time_column]
+        y_product = df[product_column_1]
+        popt, _ = curve_fit(objective, x, y_product)
+        a_1, b_1, c_1 = popt
+        y_products = objective(x, a_1, b_1, c_1)
+
+
+         # Plot and line of best fit  for product
         fig_product = px.scatter(x=df[time_column], y=df[product_column_1], labels={'x':'t [h]', 'y':'Cp (g/L)'})
+        fig_product.add_scatter(x=x, y=y_products, mode='lines')
+
+
+
+        # Curve fitting for cell
+        x= df[time_column]
+        y_cell = df[cell_column]
+        popt, _ = curve_fit(objective, x, y_cell)
+        a_2, b_2, c_2 = popt
+        y_cells = objective(x, a_2, b_2, c_2)
+
+        # Plot and line of best fit  for cell
         fig_cell = px.scatter(x=df[time_column], y=df[cell_column], labels={'x':'t [h]', 'y':'Cx (g/L)'} )
-        
+        fig_cell.add_scatter(x=x, y=y_cells, mode='lines')
 
 
         col_sub.plotly_chart(fig_substrate)
+        col_sub.latex('y = %.5f * x + %.5f * x^2 + %.5f' % (a, b, c))
+
         col_prod.plotly_chart(fig_product)
+        col_prod.latex('y = %.5f * x + %.5f * x^2 + %.5f' % (a_1, b_1, c_1))
+
         col_cell.plotly_chart(fig_cell)
+        col_cell.latex('y = %.5f * x + %.5f * x^2 + %.5f' % (a_2, b_2, c_2))
+
+
+        # fit a second degree polynomial to the economic data
+
+         # ODE FITTING
 
 
 
+
+
+
+        
         
         
     session_state = SessionState.get(name="", button_sent=False)
@@ -157,7 +211,7 @@ def main():
                 col4_7.checkbox(check_box)
 
 
-        
+       
             
 
         with st.beta_expander('Operation parameters'):
