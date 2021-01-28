@@ -11,6 +11,8 @@ import substrate_models as sm
 from calculations import yieldx, productivity
 import pandas as pd
 from scipy.optimize import curve_fit
+import lmfit
+import sys
 
 
 
@@ -43,11 +45,44 @@ def objective(x, a, b, c):
 	return a * x + b * x**2 + c
 
 
+# ODE functions
+def ds_dt(Cx, t, mu, test):
+
+    rs= mu*Cx/0.1 + 0.1*Cx/0.1 + 0.1 +test
+    return rs
+
+def dx_dt(Cx, t, mu):
+    return -0.7*Cx/0.5 + mu*Cx/0.5 + 0.7
+
+def dp_dt(alpha, beta, Cx, Cp):
+    return alpha*0.7*Cx + beta*Cx - 0.6 * Cp
+
+
+
+#fit function
+def fitfunc(t, Cx0, mu):
+    'Function that returns Ca computed from an ODE for a k'
+    Casol = odeint(ds_dt, Cx0, t, args=(mu,))
+    return Casol[:,0]
+
+
+
+# Residual function
+
+
+def residual(params, t, data):
+    mu = params['mu'].value
+    Cx0 = 0
+    model = fitfunc(t, Cx0, mu)
+    return model-data
+
+    
+
 
 #sidebar
-def main():
+def app():
 
-   
+
     st.sidebar.image('Images/Green Connection Icon Internet Logo (1).png', use_column_width= True)
 
     if st.sidebar.selectbox('Choose Your Project', ['Open Single Limiting Nutrient Project', 'Open Multiple Limiting Nutrients Project', 'Open Inhibition Model Project'] ):
@@ -64,6 +99,7 @@ def main():
         st.image('Images/batch.png')
     else:
         st.image('Images/continuous.png')
+   
 
     col1,col2,col3 = st.beta_columns(3)
     col1.selectbox('Reactant', ['Glucose', 'Xylose', 'Fructose', 'Other'])
@@ -77,6 +113,8 @@ def main():
 
     
 
+    # User inputs file/ csv to work on
+
     csv=st.file_uploader('Add your csv file', type=["csv"])
 
     if csv is not None:
@@ -84,9 +122,11 @@ def main():
         df= pd.read_csv(csv)
         column_names=df.columns.values.tolist()
         
+
         st.dataframe(df)
 
-                                                                     
+
+        # Yield calculation, also to be used in ODE calculations    ###########################################                                    
 
         st.subheader("Yield")
 
@@ -95,6 +135,7 @@ def main():
         st.write(yieldx(df, product_column, substrate_column))
 
 
+        # Productivity calculation
         st.subheader("Productivity")
 
         product_column_1 = st.selectbox('Add the column name for the product yield you would like', column_names, key=1)
@@ -103,7 +144,8 @@ def main():
 
         cell_column = st.selectbox('Please add the cell growth column', column_names, key=1)
 
-
+        ## CURVE FITTING #################################
+        st.header('Curve Fitting')
         col_sub, col_prod, col_cell = st.beta_columns(3)
 
 
@@ -155,13 +197,51 @@ def main():
         col_cell.plotly_chart(fig_cell)
         col_cell.latex('y = %.5f * x + %.5f * x^2 + %.5f' % (a_2, b_2, c_2))
 
-
-        # fit a second degree polynomial to the economic data
-
-         # ODE FITTING
+        ##########################################################################
 
 
 
+         # ODE FITTING ###############################################
+
+        st.header('Simulations and  kinetic model')
+         
+        def fitfunc(t, Cx0, mu, test):
+            'Function that returns Ca computed from an ODE for a k'
+            Casol = odeint(ds_dt, Cx0, t, args=(mu,test))
+            return Casol[:,0]
+
+        def residual(params, t, data):
+            mu = params['mu'].value
+            test = params['test'].value
+            Cx0 = 0
+            model = fitfunc(t, Cx0, mu, test)
+            return model-data
+
+        
+
+        params = lmfit.Parameters()
+        params.add('mu', value=0.2, min=0, max=10)
+        params.add('test', value=0.2, min=0, max=10)
+        o1 = lmfit.minimize(residual, params, args=(df[time_column], df[cell_column]), method='leastsq', nan_policy='omit')
+
+        fig_ode_cell = px.scatter(x=df[time_column], y=df[cell_column], labels={'x':'t [h]', 'y':'Cx (g/L)'} )
+        fig_ode_cell.add_scatter(x=df[time_column], y=df[cell_column]+o1.residual, mode='lines')
+
+        st.plotly_chart(fig_ode_cell)
+        
+
+        fit_report = lmfit.report_fit(o1)
+
+        param_dict =[]
+        
+
+        for name, param in o1.params.items():
+            param_dict.append([name, param.value, param.stderr, param.init_value, param.correl, param.expr, param.max, param.min, param.vary])
+
+        data_df = pd.DataFrame(param_dict,columns=['name', 'param.value', 'param.stderr', 'param.init_value', 'param.correl', 'param.expr', 'param.max', 'param.min', 'param.vary'])
+        st.dataframe(data_df)
+
+        
 
 
 
@@ -298,14 +378,14 @@ def main():
 
 
 
-    
+
 
     selected_equations = st.multiselect("Select One or more inhibition models", ["Monod (No inhibition)", "Competive inhibiton", "Non-competitive inhibition", "Edward's Model", "Andrew's Model", "Modified Steele's Model"])
 
     # if selected_equations == "Monod (No inhibition)":
     st.write(sm.monod(1,1,1))
 
-
+    
 
 
 
@@ -359,8 +439,6 @@ def main():
 
     # Define a function which calculates the derivative
     
-   
-
-if __name__ == "__main__":
-    main()
+st.sidebar.radio('More Information',['Curve Fitting', 'Kinetics'])  
+    
 
