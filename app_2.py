@@ -204,42 +204,88 @@ def app():
          # ODE FITTING ###############################################
 
         st.header('Simulations and  kinetic model')
+
+        
+
+        cell_model=st.selectbox('Pick a cell growth model', ["Monod (No inhibition)", "Competive inhibition", "Non-competitive inhibition", "Edward's Model", "Andrew's Model", "Modified Steele's Model"])
+
+        if cell_model == 'Monod (No inhibition)':
+
+            # what do I add as the substrate, etc in the function
+            #Do I need to find optimize the parameters?
+            # optimizing cell growth parameters then using it in ODE
+            # how to set parameters using classes
+            #MAKE A CLASS WHICH OPTIMIZES TO GET MU ASWELL AS OPTIMIZES THE ACTUAL21    
+
+            mu = sm.monod(0, 0, 0)
+
+        elif cell_model == 'Competive inhibition':
+            mu = sm.competitive(0, 0, 0 , 0)
+
+        elif cell_model == 'Non-competitive inhibition':
+            mu = sm.non_competitive(0,0,0,0)
+
+        elif cell_model == "Edward's Model":
+            mu = sm.edwards(0,0,0,0,0)
+
+        elif cell_model == "Andrew's Model":
+            mu = sm.andrews(0,0,0,0)
+
+        elif cell_model == "Modified Steele's Model":
+            mu = sm.mod_steeles
+            
+
+
          
-        def fitfunc(t, Cx0, mu, test):
-            'Function that returns Ca computed from an ODE for a k'
-            Casol = odeint(ds_dt, Cx0, t, args=(mu,test))
-            return Casol[:,0]
+            def fitfunc(t, Cx0, mu, test):
+                'Function that returns Ca computed from an ODE for a k'
+                Casol = odeint(ds_dt, Cx0, t,  args=(mu,test))
+                return Casol[:,0]
 
-        def residual(params, t, data):
-            mu = params['mu'].value
-            test = params['test'].value
-            Cx0 = 0
-            model = fitfunc(t, Cx0, mu, test)
-            return model-data
+            def residual(params, mu,  t, data):
+                # mu = params['mu'].value
+                test = params['test'].value
+                Cx0 = 0
+                model = fitfunc(t, Cx0, mu, test)
+                return model-data
 
-        
+            col1, col2 = st.beta_columns(2)
+            fit_types ={'lmfit':col1, 'differential_evolution':col2}
+            # Parameter estimation lmfit
 
-        params = lmfit.Parameters()
-        params.add('mu', value=0.2, min=0, max=10)
-        params.add('test', value=0.2, min=0, max=10)
-        o1 = lmfit.minimize(residual, params, args=(df[time_column], df[cell_column]), method='leastsq', nan_policy='omit')
+            for k, v in fit_types.items():
 
-        fig_ode_cell = px.scatter(x=df[time_column], y=df[cell_column], labels={'x':'t [h]', 'y':'Cx (g/L)'} )
-        fig_ode_cell.add_scatter(x=df[time_column], y=df[cell_column]+o1.residual, mode='lines')
+    
 
-        st.plotly_chart(fig_ode_cell)
-        
+                params = lmfit.Parameters()
+                # params.add('mu', value=0.2, min=0, max=10)
+                params.add('test', value=0.2, min=0, max=10)
+                o1 = lmfit.minimize(residual, params, args=(mu, df[time_column], df[cell_column]), method=k, nan_policy='omit')
 
-        fit_report = lmfit.report_fit(o1)
+            
 
-        param_dict =[]
-        
 
-        for name, param in o1.params.items():
-            param_dict.append([name, param.value, param.stderr, param.init_value, param.correl, param.expr, param.max, param.min, param.vary])
 
-        data_df = pd.DataFrame(param_dict,columns=['name', 'param.value', 'param.stderr', 'param.init_value', 'param.correl', 'param.expr', 'param.max', 'param.min', 'param.vary'])
-        st.dataframe(data_df)
+
+                v.header(' With {} estimation'.format(k))
+
+                fig_ode_cell = px.scatter(x=df[time_column], y=df[cell_column], labels={'x':'t [h]', 'y':'Cx (g/L)'} )
+                fig_ode_cell.add_scatter(x=df[time_column], y=df[cell_column]+o1.residual, mode='lines')
+
+                v.plotly_chart(fig_ode_cell)
+                
+
+                fit_report = lmfit.report_fit(o1)
+
+                param_dict =[]
+                
+
+                for name, param in o1.params.items():
+                    param_dict.append([name, param.value, param.stderr, param.init_value, param.correl, param.expr, param.max, param.min, param.vary])
+
+                data_df = pd.DataFrame(param_dict,columns=['name', 'param.value', 'param.stderr', 'param.init_value', 'param.correl', 'param.expr', 'param.max', 'param.min', 'param.vary'])
+                v.dataframe(data_df)
+                st.write(mu)
 
         
 
@@ -439,6 +485,6 @@ def app():
 
     # Define a function which calculates the derivative
     
-st.sidebar.radio('More Information',['Curve Fitting', 'Kinetics'])  
+
     
 

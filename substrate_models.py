@@ -10,6 +10,7 @@ def monod(S, umax, Ks):
     mu=(umax*S)/(S+Ks)
     return mu
 
+
 def competitive(S, umax, Ks, Ki):
     '''competitive inhibition growth rate'''
     mu= umax*S/(Ks*(1+(S/Ki))+S)
@@ -52,7 +53,7 @@ class Bacteria:
 
     def intergrate(self, y0, t_span):
         self.y0 = y0
-        self.tspan= t_span
+        self.tspan= t_span                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 
         x= odeint(self.dx_dt, self.y0, self.tspan )
         return x
@@ -79,6 +80,8 @@ class Bacteria:
         plt.plot(self.t, self.final, '--', linewidth=2, c='blue');
         # display fitted statisticsh
         self.report=report_fit(self.result)
+
+# check out this one again and use it to integrate and get the optimized parameters and get the mu value
 
 
 
