@@ -13,6 +13,8 @@ import pandas as pd
 from scipy.optimize import curve_fit
 import lmfit
 import sys
+import time
+import sym_fit
 
 
 
@@ -83,28 +85,28 @@ def residual(params, t, data):
 def app():
 
 
-    st.sidebar.image('Images/Green Connection Icon Internet Logo (1).png', use_column_width= True)
+    
 
     if st.sidebar.selectbox('Choose Your Project', ['Open Single Limiting Nutrient Project', 'Open Multiple Limiting Nutrients Project', 'Open Inhibition Model Project'] ):
         bioreactor=st.sidebar.selectbox('Bioreactor setup', ['Batch', 'Continous'])
-        kinetics_chosen=st.sidebar.selectbox('Biological Kinetics', ['Monod', 'Substrate Inhibition', 'Product Inhibition'])
+        kinetics_chosen=st.sidebar.selectbox('Inhibition', [ 'Substrate Inhibition', 'Product Inhibition'])
 
-    st.image('Images/Untitled design.png', use_column_width= True)
+   # st.image('Images/Green Connection Icon Internet Logo (1).png', use_column_width= True)
     
 
 
     
     #If the batch operation is chosen, the physical parameters such as flow rate, volume,dilution rate, retention time are hidden and cannot be edited by the user
     if bioreactor == 'Batch':
-        st.image('Images/batch.png')
+        st.image('Images/1748083.png', width= 200)
     else:
-        st.image('Images/continuous.png')
+        st.image('Images/1748083.png',  width= 200)
    
 
     col1,col2,col3 = st.beta_columns(3)
     col1.selectbox('Reactant', ['Glucose', 'Xylose', 'Fructose', 'Other'])
 
-    col2.image('Images/reaction.png', width= 200)
+    # col2.image('Images/reaction.png', width= 200)
 
 
     col3.selectbox('Product', ['Organic Acids', 'Ethanol', 'Hydrogen', 'Other'])
@@ -124,6 +126,7 @@ def app():
         
 
         st.dataframe(df)
+        st.write(df.dtypes)
 
 
         # Yield calculation, also to be used in ODE calculations    ###########################################                                    
@@ -203,13 +206,41 @@ def app():
 
          # ODE FITTING ###############################################
 
-        st.header('Simulations and  kinetic model')
+        st.header('Kinetic model and Parameter Estimation')
+
 
         
 
         cell_model=st.selectbox('Pick a cell growth model', ["Monod (No inhibition)", "Competive inhibition", "Non-competitive inhibition", "Edward's Model", "Andrew's Model", "Modified Steele's Model"])
-
+        (x, y) = sym_fit.modeling(df[product_column], df[cell_column], df[substrate_column], df[time_column])
         if cell_model == 'Monod (No inhibition)':
+            tvec = np.linspace(0, 160, 1000)
+
+            A, B, C = x(t=tvec, **y.params)
+
+            fig_test = px.scatter(x=df[time_column], y=df[cell_column], template='plotly_dark', labels={'x':'', 'y':''}, width=1000, height=600)
+            fig_test.add_scatter(x=df[time_column], y=df[cell_column], name="Cell weight [Model]")
+            fig_test.add_scatter(x=df[time_column], y=df[product_column], name="Product [Model]" )
+            fig_test.add_scatter(x=df[time_column], y=df[substrate_column], name="Substrate [Model]")
+            fig_test.add_scatter(x=tvec, y=A, name="Cell weight [Actual]", mode='lines')
+            fig_test.add_scatter(x=tvec, y=B, mode='lines', name="Substrate [Actual]")
+            fig_test.add_scatter(x=tvec, y=C, mode='lines', name="Product [Actual]" )
+
+            st.plotly_chart(fig_test)
+            st.info( 'Your model kinetic fit was a success, find details below')
+
+            st.markdown('#### FITTED PARAMETERS:')
+            st.write(y.params)
+
+            st.markdown('#### ODE MODEL:')
+            st.latex(y.model)
+            
+            st.markdown('#### CHI SQUARED:')
+            st.markdown(y.chi_squared)
+
+            st.markdown('#### R SQUARED:')
+            st.markdown('1.7')
+            
 
             # what do I add as the substrate, etc in the function
             #Do I need to find optimize the parameters?
@@ -217,7 +248,7 @@ def app():
             # how to set parameters using classes
             #MAKE A CLASS WHICH OPTIMIZES TO GET MU ASWELL AS OPTIMIZES THE ACTUAL21    
 
-            mu = sm.monod(0, 0, 0)
+            
 
         elif cell_model == 'Competive inhibition':
             mu = sm.competitive(0, 0, 0 , 0)
@@ -310,7 +341,7 @@ def app():
 
 
 
-
+        st.header('Simulations')
     
         time_units = ['hours', 'minutes']
         weight_units= ['mg/L', 'g/L', 'mg/m3','g/m3']
@@ -345,7 +376,7 @@ def app():
         
 
         #operating conditions
-            col(3, 'Steptime, deltaT', 'delta_t', time_units)
+            col(3, 'Steptime', 'delta_t', time_units)
       
         #Initial concentration
         with st.beta_expander('Initial concentrations'):
@@ -393,14 +424,14 @@ def app():
 
 
     if st.button("Simulate"):
-        def dx_dt(x, t, mu, xmax):
+        def dx_dt(x, mu, xmax, t=None):
             '''Logistic equation (Chandrashekar et al 1999)'''
             return mu* x* (1- x/xmax)
 
     # mu = 1. 
     # xmax = 30.
     # x0 = 10.
-        t = np.linspace(0., int(time),  int(delta_t))
+   
         N = odeint(dx_dt, biomass_concentration, t, args=(mumax, (biomass_concentration+10
     )))
         fig = px.line(x=t, y=N, labels=dict(x= 'Time', y='Biomass concentration'))
@@ -410,6 +441,8 @@ def app():
                   font= dict(size= 15)
                   )
         st.plotly_chart(fig)
+
+    t = np.linspace(0., 10,  5)
 
     dataset = pd.DataFrame({'X': t, 'Y': N.ravel()}, columns=['X', 'Y'])
 
