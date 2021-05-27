@@ -1,5 +1,6 @@
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Olayile/Bioprocess-tool)
 
+# OpenFerm: Bioprocess-tool
 
 ## Expected results
 - Simulate bioreactor experiments involving microbial species and predict the
@@ -18,7 +19,6 @@ concentration, temperature
 - Model significance
 
 
-# OpenFerm: Bioprocess-tool
 
 **Description**:  
 
