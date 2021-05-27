@@ -28,7 +28,7 @@ concentration, temperature
 
 **Screenshot**: If the software has visual components, place a screenshot after the description; e.g.,
 
-![](Bioprocess-tool/Images/x.png)
+![](https://github.com/Olayile/Bioprocess-tool/blob/main/Images/x.png)
 
 
 ## Dependencies
