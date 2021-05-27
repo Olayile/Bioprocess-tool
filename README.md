@@ -28,7 +28,7 @@ concentration, temperature
 
 **Screenshot**: If the software has visual components, place a screenshot after the description; e.g.,
 
-![](/workspace/Bioprocess-tool/Images/Screenshot 2021-05-10 at 00.23.08.png)
+![](Bioprocess-tool/Images/x.png)
 
 
 ## Dependencies
