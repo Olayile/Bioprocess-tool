@@ -1,6 +1,6 @@
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Olayile/Bioprocess-tool)
 
-# OpenFerm: Bioprocess-tool
+# BioFerm: Bioprocess-tool
 
 A web application for the kinetic modelling and estimation of kinetic parameters
 
