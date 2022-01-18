@@ -23,52 +23,9 @@ concentration, temperature
 
 
 
+<!-- ![](https://github.com/Olayile/Bioprocess-tool/blob/main/Images/x.png) -->
 
-
-
-**Screenshot**: If the software has visual components, place a screenshot after the description; e.g.,
-
-![](https://github.com/Olayile/Bioprocess-tool/blob/main/Images/x.png)
-
-
-## Dependencies
-
-
-
-## Installation
-
-
-
-## Configuration
-
-
-
-## Usage
-
-
-
-## Known issues
-
-Document any known significant shortcomings with the software.
-
-## Getting help
-
-Instruct users how to get help with this software; this might include links to an issue tracker, wiki, mailing list, etc.
-
-
-
-## Getting involved
-
-General instructions on _how_ to contribute should be stated with a link to [CONTRIBUTING](CONTRIBUTING.md).
-
-
-----
-
-## Open source licensing info
-
-1. [TERMS](TERMS.md)
-2. [LICENSE](LICENSE)
-3. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)
+![](https://github.com/Olayile/Bioprocess-tool/blob/main/Images/im2.png)
 
 
 ----
